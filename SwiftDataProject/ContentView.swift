@@ -17,25 +17,23 @@ struct ContentView: View {
 //    },sort: \User.name) var users:[User]
     
     //can be rewritten like this
-    @Query(filter: #Predicate<User> { user in
-        if user.name.localizedStandardContains("R") {
-            if user.city == "London" {
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }, sort: \User.name) var users: [User]
+//    @Query(filter: #Predicate<User> { user in
+//        if user.name.localizedStandardContains("R") {
+//            if user.city == "London" {
+//                return true
+//            } else {
+//                return false
+//            }
+//        } else {
+//            return false
+//        }
+//    }, sort: \User.name) var users: [User]
     @State private var path = [User]()
+    @State private var showingUpcomingOnly = false
+
     var body: some View {
         NavigationStack (path: $path){
-            List(users) { user in
-//                NavigationLink(value:user) {
-                    Text(user.name)
-//                }
-            }
+            UsersView(minimumJoinDate: showingUpcomingOnly ? .now : .distantPast)
             .navigationTitle("Users")
             .navigationDestination(for: User.self) { user in
                 EditUserView(user: user)
@@ -55,6 +53,10 @@ struct ContentView: View {
                     modelContext.insert(second)
                     modelContext.insert(third)
                     modelContext.insert(fourth)
+                }
+                
+                Button(showingUpcomingOnly ? "Show Everyone" : "Show Upcoming") {
+                    showingUpcomingOnly.toggle()
                 }
             }
             
